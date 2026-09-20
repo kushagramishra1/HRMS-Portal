@@ -39,7 +39,7 @@ Browser / React UI
 Next.js App Router + Route Handlers
         |
         v
-Prisma ORM
+Direct SQLite access with better-sqlite3
         |
         v
 SQLite Database

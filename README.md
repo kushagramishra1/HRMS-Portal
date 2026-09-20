@@ -1,6 +1,6 @@
-# PeopleHub HRMS — B.Tech CSE Project
+# PeopleHub HRMS
 
-A simple full-stack Human Resource Management System designed for a final-year B.Tech CSE project.
+A focused Human Resource Management System for teams that need a clear view of people operations.
 
 ## What it includes
 
@@ -9,7 +9,7 @@ A simple full-stack Human Resource Management System designed for a final-year B
 - Employee CRUD: add, edit, search, delete
 - Daily attendance: Present, Absent, Half Day, Work From Home
 - Leave requests: create, approve, reject, filter
-- SQLite database with Prisma ORM and relational models
+- Local SQLite database with direct SQL queries
 - Responsive UI for desktop and mobile
 
 ## Tech stack
@@ -18,8 +18,7 @@ A simple full-stack Human Resource Management System designed for a final-year B
 - React 19.3
 - TypeScript 5.9
 - Tailwind CSS 4
-- Prisma ORM 7
-- SQLite + better-sqlite3 driver adapter
+- SQLite + better-sqlite3
 - Lucide React icons
 
 ## Run locally
@@ -58,12 +57,10 @@ components/
   sidebar.tsx
   topbar.tsx
 lib/
-  prisma.ts                 # database client
+  db.ts                    # SQLite database and queries
   utils.ts                  # small formatting helpers
-prisma/
-  schema.prisma             # database design
+scripts/
   seed.ts                   # sample data
-prisma7.config.ts
 ```
 
 ## Database design
@@ -76,11 +73,10 @@ One employee can have many `Attendance` records and many `LeaveRequest` records.
 
 1. **Why Next.js?** It provides a React-based full-stack framework with routing and server-side capabilities in one project.
 2. **Why TypeScript?** It adds static typing and catches common errors during development.
-3. **Why Prisma?** It provides type-safe database queries and keeps the schema easy to explain.
-4. **Why SQLite?** It is file-based, needs no separate database server, and is sufficient for a college project prototype.
-5. **How does CRUD work?** Employee forms call Next.js Route Handlers, which validate data and use Prisma to create, read, update, or delete records.
-6. **How is attendance stored?** Each employee gets one attendance record per date, enforced by a composite unique constraint.
-7. **How are leave approvals handled?** A leave starts as `PENDING`; the admin can change it to `APPROVED` or `REJECTED`.
+3. **Why SQLite?** It is file-based, needs no separate database server, and is sufficient for a college project prototype.
+4. **How does CRUD work?** Employee forms call Next.js Route Handlers, which validate data and use direct SQLite queries to create, read, update, or delete records.
+5. **How is attendance stored?** Each employee gets one attendance record per date, enforced by a composite unique constraint.
+6. **How are leave approvals handled?** A leave starts as `PENDING`; the admin can change it to `APPROVED` or `REJECTED`.
 
 ## HRMS-Portal
 

@@ -4,7 +4,7 @@ import AppShell from "../components/app-shell";
 
 export const metadata: Metadata = {
   title: "PeopleHub HRMS",
-  description: "Simple Human Resource Management System for academic project"
+  description: "People operations, attendance, and leave management in one workspace"
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

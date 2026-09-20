@@ -2,19 +2,12 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { ArrowUpRight, CalendarCheck2, ClipboardList, UserPlus, Users, UserRoundCheck } from "lucide-react";
-import { prisma } from "../../lib/prisma";
+import { getDashboardData } from "../../lib/db";
 import { formatDate, initials } from "../../lib/utils";
 
 export default async function DashboardPage() {
   const start = new Date(); start.setHours(0, 0, 0, 0);
-  const [employees, attendance, pendingLeaves, recentEmployees, recentLeaves, presentToday] = await Promise.all([
-    prisma.employee.count({ where: { status: "ACTIVE" } }),
-    prisma.attendance.count({ where: { date: start } }),
-    prisma.leaveRequest.count({ where: { status: "PENDING" } }),
-    prisma.employee.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
-    prisma.leaveRequest.findMany({ where: { status: "PENDING" }, include: { employee: true }, orderBy: { createdAt: "desc" }, take: 4 }),
-    prisma.attendance.count({ where: { date: start, status: { in: ["PRESENT", "HALF_DAY", "WORK_FROM_HOME"] } } })
-  ]);
+  const { employees, attendance, pendingLeaves, recentEmployees, recentLeaves, presentToday } = getDashboardData(start.toISOString().slice(0, 10));
   const attendanceRate = employees ? Math.round((presentToday / employees) * 100) : 0;
   const stats = [
     { label: "Active employees", value: employees, note: "Current workforce", icon: Users },
