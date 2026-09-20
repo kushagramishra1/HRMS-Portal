@@ -3,5 +3,5 @@ node_modules
 .env
 npm-debug.log*
 generated
-prisma/*.db
-prisma/*.db-journal
+*.db
+*.db-journal
