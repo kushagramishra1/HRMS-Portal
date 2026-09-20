@@ -49,7 +49,8 @@ type EmployeeRow = {
   updatedAt: string;
 };
 
-const databasePath = process.env.DATABASE_PATH ?? path.join(process.cwd(), "dev.db");
+const isVercel = Boolean(process.env.VERCEL);
+const databasePath = isVercel ? ":memory:" : process.env.DATABASE_PATH ?? path.join(process.cwd(), "dev.db");
 const globalForDatabase = globalThis as unknown as { db?: Database.Database };
 const db = globalForDatabase.db ?? new Database(databasePath);
 
@@ -214,3 +215,33 @@ export function seedLeave(input: { employeeId: number; type: string; startDate: 
   `).run(input);
   return getLeave(Number(result.lastInsertRowid));
 }
+
+function seedVercelDatabase() {
+  const existing = db.prepare("SELECT COUNT(*) AS count FROM Employee").get() as { count: number };
+  if (existing.count > 0) return;
+
+  const seed = db.transaction(() => {
+    const employees = [
+      ["EMP001", "Aarav", "Sharma", "aarav@company.com", "Engineering", "Software Engineer"],
+      ["EMP002", "Priya", "Singh", "priya@company.com", "Human Resources", "HR Executive"],
+      ["EMP003", "Rohan", "Verma", "rohan@company.com", "Design", "UI/UX Designer"],
+      ["EMP004", "Meera", "Gupta", "meera@company.com", "Finance", "Finance Analyst"],
+      ["EMP005", "Kabir", "Khan", "kabir@company.com", "Engineering", "QA Engineer"]
+    ];
+    const insertEmployee = db.prepare(`
+      INSERT INTO Employee (employeeCode, firstName, lastName, email, department, designation, joinDate, salary, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `);
+    const insertAttendance = db.prepare(`
+      INSERT INTO Attendance (employeeId, date, checkIn, status) VALUES (?, ?, ?, ?)
+    `);
+    const today = new Date().toISOString().slice(0, 10);
+    employees.forEach((employee, index) => {
+      const result = insertEmployee.run(...employee.slice(0, 4), employee[4], employee[5], "2025-01-01T00:00:00.000Z", 500000);
+      insertAttendance.run(Number(result.lastInsertRowid), today, index === 2 ? "09:38" : "09:10", index === 3 ? "WORK_FROM_HOME" : "PRESENT");
+    });
+  });
+  seed();
+}
+
+if (isVercel) seedVercelDatabase();
